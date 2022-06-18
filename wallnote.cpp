@@ -7,6 +7,9 @@
 #include <QDebug>
 #include <QApplication>
 #include <fstream>
+#include <QFile>
+#include <QTextStream>
+#include <QApplication>
 /**
  * 1. 应用启动时从文件系统拿到当前配置,并通过这个配置展示文本
  * 2. 点击设置时, 将当前配置设置给SettingWidget并反显
@@ -65,17 +68,16 @@ void Wallnote::showWallpaper(){
     }
 }
 void Wallnote::readSettingFromDisk(){
-    std::ifstream ifs(filePath.toStdString(),std::ios::in|std::ios::binary);
-    if(!ifs.is_open()){
-        qDebug() << "open file " << filePath << " failed\n";
-    }else{
-        ifs >> this->settingObj.fontSize;
-        ifs >> this->settingObj.fontColor;
-        ifs >> this->settingObj.fontFamily;
-        ifs >> this->settingObj.textContext;
-        ifs.close();
-        qDebug() << "read file from " << filePath << "success!";
-        qDebug() << "read file complete!";
+    QFile file(filePath);
+    if(file.open(QFile::ReadOnly | QFile::Truncate)){
+        QTextStream out(&file);
+        this->settingObj.fontSize = out.readLine();
+        this->settingObj.fontColor = out.readLine();
+        this->settingObj.fontFamily = out.readLine();
+        this->settingObj.textContext = QString("").append(out.readLine());
+        while(!out.atEnd()){
+            settingObj.textContext.append("\n").append(out.readLine());
+        }
     }
 }
 void Wallnote::initTextWindow(){
@@ -84,23 +86,17 @@ void Wallnote::initTextWindow(){
     this->textBrowser->show();
 }
 void Wallnote::setTextWindow(){
-    qDebug() << "textWindow";
-    qDebug() << QString::fromStdString(settingObj.fontColor);
-    qDebug() << QString::fromStdString(settingObj.fontSize);
-    qDebug() << QString::fromStdString(settingObj.fontFamily);
-    qDebug() << QString::fromStdString(settingObj.textContext);
-
     //设置透明背景
     textBrowser->setAttribute(Qt::WA_TranslucentBackground);
     //设置位置
     textBrowser->setGeometry(400,20,950,950);
     //设置文本内容
-    textBrowser->setText(QString::fromStdString(settingObj.textContext));
+    textBrowser->setText(settingObj.textContext);
     //组装并设置样式
     QString styleStr = "background-color:rgba(0,0,0,100);border:0;";
-    styleStr.append(QString("color:%1;").arg(QString::fromStdString(settingObj.fontColor)));
-    styleStr.append(QString("font-family:%1;").arg(QString::fromStdString(settingObj.fontFamily)));
-    styleStr.append(QString("font-size:%1px;").arg(QString::fromStdString(settingObj.fontSize)));
+    styleStr.append(QString("color:%1;").arg(settingObj.fontColor));
+    styleStr.append(QString("font-family:%1;").arg(settingObj.fontFamily));
+    styleStr.append(QString("font-size:%1px;").arg(settingObj.fontSize));
     textBrowser->setStyleSheet(styleStr);
 }
 void Wallnote::initSystemIcon(){
@@ -117,6 +113,7 @@ void Wallnote::initSystemIcon(){
     tray->show();
 
     connect(setting,&QAction::triggered,this,&Wallnote::showSettingWidget);
+    connect(close,&QAction::triggered,this,&Wallnote::shutdowApp);
 
 }
 
@@ -132,19 +129,23 @@ void Wallnote::changeTextAndSave(){
     setTextWindow();
     saveSettingToDisk();
 }
+/**
+ * 按行存储配置数据
+ * 第一行: fontSize
+ * 第二行: fontColor
+ * 第三行: fontFamily
+ * 第四行: 文本内容
+ */
 void Wallnote::saveSettingToDisk(){
-
-//    SettingObject obj;
-//    obj.fontColor = this->settingObj.fontColor;
-//    obj.fontSize = this->settingObj.fontSize;
-//    obj.fontFamily = this->settingObj.fontFamily;
-//    obj.textContext = this->settingObj.textContext;
-    qDebug() << "prepare save file to data.dat";
-    std::ofstream ofs(filePath.toStdString(),std::ios::out|std::ios::trunc);
-    ofs << this->settingObj.fontSize << std::endl;
-    ofs << this->settingObj.fontColor << std::endl;
-    ofs << this->settingObj.fontFamily << std::endl;
-    ofs << this->settingObj.textContext;
-    ofs.close();
-    qDebug() << "setting save to " << filePath << "success!";
+    QFile file(filePath);
+    if(file.open(QFile::WriteOnly | QFile::Truncate)){
+        QTextStream out(&file);
+        out << this->settingObj.fontSize << "\n";
+        out << this->settingObj.fontColor << "\n";
+        out << this->settingObj.fontFamily << "\n";
+        out << this->settingObj.textContext;
+    }
+}
+void Wallnote::shutdowApp(){
+    qApp->quit();
 }

@@ -36,5 +36,6 @@ public:
     void readSettingFromDisk();
     //数据写入本地
     void saveSettingToDisk();
+    void shutdowApp();
 };
 #endif // WALLNOTE_H
