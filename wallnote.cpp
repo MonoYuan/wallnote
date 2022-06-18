@@ -64,13 +64,6 @@ void Wallnote::showWallpaper(){
         SetParent((HWND)this->winId(),desktop);
     }
 }
-/**
- * 默认内容以文本形式存储,
- * 行1: 字体大小
- * 行2: 字体颜色
- * 行3: 字体类型
- * 行4: 文本内容
- */
 void Wallnote::readSettingFromDisk(){
     SettingObject obj;
     std::ifstream ifs(filePath.toStdString(),std::ios::in|std::ios::binary);
