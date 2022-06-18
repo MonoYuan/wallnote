@@ -84,6 +84,12 @@ void Wallnote::initTextWindow(){
     this->textBrowser->show();
 }
 void Wallnote::setTextWindow(){
+    qDebug() << "textWindow";
+    qDebug() << QString::fromStdString(settingObj.fontColor);
+    qDebug() << QString::fromStdString(settingObj.fontSize);
+    qDebug() << QString::fromStdString(settingObj.fontFamily);
+    qDebug() << QString::fromStdString(settingObj.textContext);
+
     //设置透明背景
     textBrowser->setAttribute(Qt::WA_TranslucentBackground);
     //设置位置
@@ -128,18 +134,17 @@ void Wallnote::changeTextAndSave(){
 }
 void Wallnote::saveSettingToDisk(){
 
-    SettingObject obj;
-    obj.fontColor = this->settingObj.fontColor;
-    obj.fontSize = this->settingObj.fontSize;
-    obj.fontFamily = this->settingObj.fontFamily;
-    obj.textContext = this->settingObj.textContext;
+//    SettingObject obj;
+//    obj.fontColor = this->settingObj.fontColor;
+//    obj.fontSize = this->settingObj.fontSize;
+//    obj.fontFamily = this->settingObj.fontFamily;
+//    obj.textContext = this->settingObj.textContext;
     qDebug() << "prepare save file to data.dat";
     std::ofstream ofs(filePath.toStdString(),std::ios::out|std::ios::trunc);
-    ofs << this->settingObj.fontSize;
-    ofs << this->settingObj.fontColor;
-    ofs << this->settingObj.fontFamily;
+    ofs << this->settingObj.fontSize << std::endl;
+    ofs << this->settingObj.fontColor << std::endl;
+    ofs << this->settingObj.fontFamily << std::endl;
     ofs << this->settingObj.textContext;
-
     ofs.close();
     qDebug() << "setting save to " << filePath << "success!";
 }
