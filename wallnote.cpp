@@ -77,9 +77,9 @@ void Wallnote::readSettingFromDisk(){
         qDebug() << QString::fromStdString(obj.textContext);
         qDebug() << "read file complete!";
         this->settingObj.textContext = obj.textContext;
-        this->settingObj.textContext = obj.textContext;
-        this->settingObj.textContext = obj.textContext;
-        this->settingObj.textContext = obj.textContext;
+        this->settingObj.fontSize = obj.fontSize;
+        this->settingObj.fontFamily = obj.fontFamily;
+        this->settingObj.fontColor = obj.fontColor;
     }
 }
 void Wallnote::initTextWindow(){
