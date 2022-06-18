@@ -65,21 +65,17 @@ void Wallnote::showWallpaper(){
     }
 }
 void Wallnote::readSettingFromDisk(){
-    SettingObject obj;
     std::ifstream ifs(filePath.toStdString(),std::ios::in|std::ios::binary);
     if(!ifs.is_open()){
         qDebug() << "open file " << filePath << " failed\n";
     }else{
-        ifs.read((char*)&obj, sizeof(obj));
+        ifs >> this->settingObj.fontSize;
+        ifs >> this->settingObj.fontColor;
+        ifs >> this->settingObj.fontFamily;
+        ifs >> this->settingObj.textContext;
         ifs.close();
         qDebug() << "read file from " << filePath << "success!";
-        qDebug() << "read data context is: ";
-        qDebug() << QString::fromStdString(obj.textContext);
         qDebug() << "read file complete!";
-        this->settingObj.textContext = obj.textContext;
-        this->settingObj.fontSize = obj.fontSize;
-        this->settingObj.fontFamily = obj.fontFamily;
-        this->settingObj.fontColor = obj.fontColor;
     }
 }
 void Wallnote::initTextWindow(){
@@ -131,17 +127,19 @@ void Wallnote::changeTextAndSave(){
     saveSettingToDisk();
 }
 void Wallnote::saveSettingToDisk(){
+
     SettingObject obj;
     obj.fontColor = this->settingObj.fontColor;
     obj.fontSize = this->settingObj.fontSize;
     obj.fontFamily = this->settingObj.fontFamily;
     obj.textContext = this->settingObj.textContext;
     qDebug() << "prepare save file to data.dat";
-    qDebug() << "prepare save data is :";
-    qDebug() << QString::fromStdString(obj.textContext);
-    qDebug() << "saving!!!";
-    std::ofstream ofs(filePath.toStdString(),std::ios::out|std::ios::binary);
-    ofs.write((const char*)&obj,sizeof(obj));
+    std::ofstream ofs(filePath.toStdString(),std::ios::out|std::ios::trunc);
+    ofs << this->settingObj.fontSize;
+    ofs << this->settingObj.fontColor;
+    ofs << this->settingObj.fontFamily;
+    ofs << this->settingObj.textContext;
+
     ofs.close();
     qDebug() << "setting save to " << filePath << "success!";
 }
