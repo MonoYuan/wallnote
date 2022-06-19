@@ -6,7 +6,10 @@ class SettingObject
 {
 public:
     SettingObject();
-    QString textContext = "有问题请联系我,邮箱: 1225210052@qq.com";
+    QString textContext = "如果有任何好的建议,请联系我!邮箱: 1225210052@qq.com,或者在github中留言:  "
+                          "https://github.com/MonoYuan/wallnote     "
+                          "if you have any ideas about this, just contact me with my email: 1225210052@qq.com    "
+                          "or leave the message on github: https://github.com/MonoYuan/wallnote";
     QString fontFamily = "SimSun";
     QString fontColor = "red";
     int fontSize = 40;

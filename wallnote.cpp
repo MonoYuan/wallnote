@@ -110,7 +110,7 @@ void Wallnote::setTextWindow(){
 }
 void Wallnote::initSystemIcon(){
     QSystemTrayIcon* tray = new QSystemTrayIcon;
-    tray->setIcon(QIcon(":/images/images/icon.png"));
+    tray->setIcon(QIcon(":/images/cat.ico"));
     QMenu* menu = new QMenu;
     QAction* close = new QAction(QString("关闭"));
     QAction* setting = new QAction(QString("设置"));

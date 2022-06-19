@@ -30,3 +30,7 @@ FORMS += \
 RESOURCES += \
     resources.qrc
 LIBS += -luser32
+
+DISTFILES += \
+    icon.rc
+RC_FILE += icon.rc
