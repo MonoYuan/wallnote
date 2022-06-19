@@ -23,10 +23,24 @@ public:
 private slots:
     void on_pushButton_clicked();
 
+    void on_colorSelect_clicked();
+
+    void on_horizontal_valueChanged(int arg1);
+
+    void on_fontSize_valueChanged(int arg1);
+
+    void on_vertical_valueChanged(int arg1);
+
+    void on_width_valueChanged(int arg1);
+
+    void on_heigth_valueChanged(int arg1);
+
+    void on_wallpaperBtn_clicked();
+
 private:
     Ui::SettingWidget *ui;
 signals:
-    void signalToChangeText();
+    void signalToChangeSettings();
 };
 
 #endif // SETTINGWIDGET_H

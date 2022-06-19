@@ -21,14 +21,14 @@ public:
     QTextBrowser* textBrowser;
     void initTextWindow();
     void setTextWindow();
+    void setQLabel();
     void initSystemIcon();
-    void showSettingWidget();
     SettingWidget* settingWidget;
     SettingObject settingObj;
 
     //设置Widget
 
-    void changeTextAndSave();
+    void changeSettingsAndSave();
 
     //数据保存到本地的路径
     QString filePath;
@@ -36,6 +36,5 @@ public:
     void readSettingFromDisk();
     //数据写入本地
     void saveSettingToDisk();
-    void shutdowApp();
 };
 #endif // WALLNOTE_H

@@ -27,13 +27,13 @@ Wallnote::Wallnote(QWidget *parent)
     : QWidget(parent)
     ,bkLabel(new QLabel(this))
 {
-    //展示壁纸
-    showWallpaper();
     //初始配置存储统路径
     QString appPath = QApplication::applicationDirPath();
     filePath = appPath + "/data.dat";
     //从磁盘读取配置,并将其指针设置给SettingObj属性
     readSettingFromDisk();
+    //展示壁纸
+    showWallpaper();
     //初始化文本背景并展示
     initTextWindow();
     //展示系统托盘图标
@@ -47,7 +47,7 @@ Wallnote::~Wallnote()
 void Wallnote::showWallpaper(){
     //展示桌面壁纸
     HWND desktop = FindWindowEx(NULL,NULL,L"Progman",NULL);
-    bkLabel->setPixmap(QPixmap(":/images/images/2.jpg"));
+    setQLabel();
     setWindowFlag(Qt::WindowType::FramelessWindowHint);
     setWindowState(Qt::WindowMaximized);
     showFullScreen();
@@ -71,9 +71,15 @@ void Wallnote::readSettingFromDisk(){
     QFile file(filePath);
     if(file.open(QFile::ReadOnly | QFile::Truncate)){
         QTextStream out(&file);
-        this->settingObj.fontSize = out.readLine();
         this->settingObj.fontColor = out.readLine();
         this->settingObj.fontFamily = out.readLine();
+        this->settingObj.fontSize = out.readLine().toInt();
+        this->settingObj.horizontal = out.readLine().toInt();
+        this->settingObj.vertical = out.readLine().toInt();
+        this->settingObj.width = out.readLine().toInt();
+        this->settingObj.height = out.readLine().toInt();
+        this->settingObj.wallpaperPath = out.readLine();
+
         this->settingObj.textContext = QString("").append(out.readLine());
         while(!out.atEnd()){
             settingObj.textContext.append("\n").append(out.readLine());
@@ -85,11 +91,14 @@ void Wallnote::initTextWindow(){
     this->setTextWindow();
     this->textBrowser->show();
 }
+void Wallnote::setQLabel(){
+    this->bkLabel->setPixmap(QPixmap(settingObj.wallpaperPath));
+}
 void Wallnote::setTextWindow(){
     //设置透明背景
     textBrowser->setAttribute(Qt::WA_TranslucentBackground);
     //设置位置
-    textBrowser->setGeometry(400,20,950,950);
+    textBrowser->setGeometry(settingObj.horizontal,settingObj.vertical,settingObj.width,settingObj.height);
     //设置文本内容
     textBrowser->setText(settingObj.textContext);
     //组装并设置样式
@@ -112,21 +121,23 @@ void Wallnote::initSystemIcon(){
     tray->setContextMenu(menu);
     tray->show();
 
-    connect(setting,&QAction::triggered,this,&Wallnote::showSettingWidget);
-    connect(close,&QAction::triggered,this,&Wallnote::shutdowApp);
+    connect(setting,&QAction::triggered,this,[=](){
+        qDebug() << "in setting page";
+        settingWidget = new SettingWidget();
+        settingWidget->settingObj = &settingObj;
+        settingWidget->loadCurValue();
+        settingWidget->show();
+        //这里需要SettingWidget中传入SettingObject的指针, 让changeText接收到并获取到对应的值,并改变主窗口的文件显示
+        connect(settingWidget,&SettingWidget::signalToChangeSettings,this,&Wallnote::changeSettingsAndSave);
+    });
+    connect(close,&QAction::triggered,this,[=](){
+        qApp->quit();
+    });
 
 }
-
-void Wallnote::showSettingWidget(){
-    settingWidget = new SettingWidget();
-    settingWidget->settingObj = &settingObj;
-    settingWidget->loadCurValue();
-    settingWidget->show();
-    //这里需要SettingWidget中传入SettingObject的指针, 让changeText接收到并获取到对应的值,并改变主窗口的文件显示
-    connect(settingWidget,&SettingWidget::signalToChangeText,this,&Wallnote::changeTextAndSave);
-}
-void Wallnote::changeTextAndSave(){
+void Wallnote::changeSettingsAndSave(){
     setTextWindow();
+    setQLabel();
     saveSettingToDisk();
 }
 /**
@@ -140,12 +151,14 @@ void Wallnote::saveSettingToDisk(){
     QFile file(filePath);
     if(file.open(QFile::WriteOnly | QFile::Truncate)){
         QTextStream out(&file);
-        out << this->settingObj.fontSize << "\n";
         out << this->settingObj.fontColor << "\n";
         out << this->settingObj.fontFamily << "\n";
+        out << this->settingObj.fontSize << "\n";
+        out << this->settingObj.horizontal << "\n";
+        out << this->settingObj.vertical << "\n";
+        out << this->settingObj.width << "\n";
+        out << this->settingObj.height << "\n";
+        out << this->settingObj.wallpaperPath << "\n";
         out << this->settingObj.textContext;
     }
-}
-void Wallnote::shutdowApp(){
-    qApp->quit();
 }
