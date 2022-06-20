@@ -10,6 +10,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QApplication>
+
 /**
  * 1. 应用启动时从文件系统拿到当前配置,并通过这个配置展示文本
  * 2. 点击设置时, 将当前配置设置给SettingWidget并反显
@@ -42,6 +43,8 @@ Wallnote::Wallnote(QWidget *parent)
 
 Wallnote::~Wallnote()
 {
+    delete this->textBrowser;
+    delete this->effect;
 }
 
 void Wallnote::showWallpaper(){
@@ -88,6 +91,7 @@ void Wallnote::readSettingFromDisk(){
 }
 void Wallnote::initTextWindow(){
     this->textBrowser = new QTextBrowser(this);
+    this->effect = new QGraphicsDropShadowEffect(this->textBrowser);
     this->setTextWindow();
     this->textBrowser->show();
 }
@@ -107,6 +111,11 @@ void Wallnote::setTextWindow(){
     styleStr.append(QString("font-family:%1;").arg(settingObj.fontFamily));
     styleStr.append(QString("font-size:%1px;").arg(settingObj.fontSize));
     textBrowser->setStyleSheet(styleStr);
+    //设置文字阴影
+    effect->setOffset(0,0);
+    effect->setColor(Qt::black);
+    effect->setBlurRadius(1);
+    textBrowser->setGraphicsEffect(effect);
 }
 void Wallnote::initSystemIcon(){
     QSystemTrayIcon* tray = new QSystemTrayIcon;
@@ -124,6 +133,10 @@ void Wallnote::initSystemIcon(){
     connect(setting,&QAction::triggered,this,[=](){
         qDebug() << "in setting page";
         settingWidget = new SettingWidget();
+        //关闭设置窗口后回收其内存, 因为其没有挂载到主Widget上
+        connect(this->settingWidget,&SettingWidget::exitSettingWidget,this,[=](){
+            delete this->settingWidget;
+        });
         settingWidget->settingObj = &settingObj;
         settingWidget->loadCurValue();
         settingWidget->show();

@@ -18,6 +18,7 @@ public:
     SettingObject* settingObj;
     void loadCurValue();
     void settingApply();
+    void closeEvent(QCloseEvent * event) override;
 
 
 private slots:
@@ -41,6 +42,7 @@ private:
     Ui::SettingWidget *ui;
 signals:
     void signalToChangeSettings();
+    void exitSettingWidget();
 };
 
 #endif // SETTINGWIDGET_H

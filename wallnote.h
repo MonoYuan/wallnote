@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QTextBrowser>
 #include <settingwidget.h>
+#include <QGraphicsDropShadowEffect>
 
 class Wallnote : public QWidget
 {
@@ -19,6 +20,7 @@ public:
     void showWallpaper();
     //文本的展示之地
     QTextBrowser* textBrowser;
+    QGraphicsDropShadowEffect* effect;
     void initTextWindow();
     void setTextWindow();
     void setQLabel();

@@ -102,4 +102,6 @@ void SettingWidget::on_wallpaperBtn_clicked()
         emit signalToChangeSettings();
     }
 }
-
+void SettingWidget::closeEvent(QCloseEvent * event){
+    emit exitSettingWidget();
+}
