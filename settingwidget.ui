@@ -18,15 +18,32 @@
     <normaloff>:/images/cat.ico</normaloff>:/images/cat.ico</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="4" column="0">
-    <widget class="QLabel" name="label_5">
+   <item row="0" column="1" colspan="2">
+    <widget class="QTextEdit" name="textContext"/>
+   </item>
+   <item row="9" column="0">
+    <widget class="QLabel" name="label_11">
      <property name="text">
-      <string>左右位置</string>
+      <string>垂直阴影</string>
      </property>
     </widget>
    </item>
-   <item row="3" column="1" colspan="2">
-    <widget class="QSpinBox" name="fontSize"/>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>文本内容</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>字体大小</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1" colspan="2">
+    <widget class="QFontComboBox" name="fontFamily"/>
    </item>
    <item row="6" column="0">
     <widget class="QLabel" name="label_7">
@@ -42,10 +59,23 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_2">
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="fontColor"/>
+   </item>
+   <item row="9" column="1" colspan="2">
+    <widget class="QSpinBox" name="shadowVertical">
+     <property name="minimum">
+      <number>-99</number>
+     </property>
+     <property name="maximum">
+      <number>99</number>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_5">
      <property name="text">
-      <string>字体颜色</string>
+      <string>左右位置</string>
      </property>
     </widget>
    </item>
@@ -56,48 +86,17 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="1" colspan="2">
-    <widget class="QSpinBox" name="vertical">
-     <property name="maximum">
-      <number>3000</number>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="2">
-    <widget class="QPushButton" name="wallpaperBtn">
+   <item row="8" column="0">
+    <widget class="QLabel" name="label_10">
      <property name="text">
-      <string>选择</string>
+      <string>水平阴影</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label">
+   <item row="14" column="0" colspan="3">
+    <widget class="QPushButton" name="pushButton">
      <property name="text">
-      <string>文本内容</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="1" colspan="2">
-    <widget class="QSpinBox" name="height">
-     <property name="maximum">
-      <number>3000</number>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1" colspan="2">
-    <widget class="QFontComboBox" name="fontFamily"/>
-   </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="label_6">
-     <property name="text">
-      <string>上下位置</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="1" colspan="2">
-    <widget class="QSpinBox" name="width">
-     <property name="maximum">
-      <number>3000</number>
+      <string>应用</string>
      </property>
     </widget>
    </item>
@@ -108,22 +107,19 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="label_3">
+   <item row="12" column="0">
+    <widget class="QLabel" name="label_9">
      <property name="text">
-      <string>字体大小</string>
+      <string>切换壁纸</string>
      </property>
     </widget>
    </item>
-   <item row="9" column="0" colspan="3">
-    <widget class="QPushButton" name="pushButton">
-     <property name="text">
-      <string>应用</string>
+   <item row="8" column="1" colspan="2">
+    <widget class="QSpinBox" name="shadowHorizontal">
+     <property name="minimum">
+      <number>-99</number>
      </property>
     </widget>
-   </item>
-   <item row="0" column="1" colspan="2">
-    <widget class="QTextEdit" name="textContext"/>
    </item>
    <item row="1" column="2">
     <widget class="QPushButton" name="colorSelect">
@@ -132,18 +128,84 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="0">
-    <widget class="QLabel" name="label_9">
+   <item row="5" column="0">
+    <widget class="QLabel" name="label_6">
      <property name="text">
-      <string>切换壁纸</string>
+      <string>上下位置</string>
      </property>
     </widget>
    </item>
-   <item row="8" column="1">
+   <item row="5" column="1" colspan="2">
+    <widget class="QSpinBox" name="vertical">
+     <property name="maximum">
+      <number>3000</number>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="1" colspan="2">
+    <widget class="QSpinBox" name="height">
+     <property name="maximum">
+      <number>3000</number>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1" colspan="2">
+    <widget class="QSpinBox" name="fontSize"/>
+   </item>
+   <item row="10" column="1" colspan="2">
+    <widget class="QSpinBox" name="shadowBlur">
+     <property name="maximum">
+      <number>10</number>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>字体颜色</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1" colspan="2">
+    <widget class="QSpinBox" name="width">
+     <property name="maximum">
+      <number>3000</number>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="1">
+    <widget class="QLineEdit" name="shadowColorText"/>
+   </item>
+   <item row="12" column="1">
     <widget class="QLineEdit" name="wallpaperText"/>
    </item>
-   <item row="1" column="1">
-    <widget class="QLineEdit" name="fontColor"/>
+   <item row="11" column="2">
+    <widget class="QPushButton" name="shadowColorBtn">
+     <property name="text">
+      <string>选择</string>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="2">
+    <widget class="QPushButton" name="wallpaperBtn">
+     <property name="text">
+      <string>选择</string>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="0">
+    <widget class="QLabel" name="label_13">
+     <property name="text">
+      <string>阴影颜色</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="0">
+    <widget class="QLabel" name="label_12">
+     <property name="text">
+      <string>阴影模糊</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

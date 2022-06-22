@@ -18,6 +18,10 @@ public:
     int width = 900;
     int height = 800;
     QString wallpaperPath = ":/images/images/2.jpg";
+    int shadowHorizontal = 0;
+    int shadowVertical = 0;
+    int shadowBlur = 3;
+    QString shadowColor = "black";
 };
 
 #endif // SETTINGOBJECT_H

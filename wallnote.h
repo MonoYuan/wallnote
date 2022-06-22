@@ -38,5 +38,6 @@ public:
     void readSettingFromDisk();
     //数据写入本地
     void saveSettingToDisk();
+    void paintEvent(QPaintEvent* event)override;
 };
 #endif // WALLNOTE_H

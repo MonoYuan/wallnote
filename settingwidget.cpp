@@ -28,6 +28,11 @@ void SettingWidget::loadCurValue(){
     ui->width->setValue(settingObj->width);
     ui->height->setValue(settingObj->height);
     ui->wallpaperText->setText(settingObj->wallpaperPath);
+
+    ui->shadowHorizontal->setValue(settingObj->shadowHorizontal);
+    ui->shadowVertical->setValue(settingObj->shadowVertical);
+    ui->shadowBlur->setValue(settingObj->shadowBlur);
+    ui->shadowColorText->setText(settingObj->shadowColor);
 }
 void SettingWidget::settingApply(){
     this->settingObj->textContext = ui->textContext->toPlainText();
@@ -39,6 +44,11 @@ void SettingWidget::settingApply(){
     this->settingObj->width = ui->width->value();
     this->settingObj->height = ui->height->value();
     this->settingObj->wallpaperPath = ui->wallpaperText->text();
+
+    this->settingObj->shadowHorizontal = ui->shadowHorizontal->value();
+    this->settingObj->shadowVertical = ui->shadowVertical->value();
+    this->settingObj->shadowBlur = ui->shadowBlur->value();
+    this->settingObj->shadowColor = ui->shadowColorText->text();
 }
 
 void SettingWidget::on_pushButton_clicked()
@@ -51,10 +61,14 @@ void SettingWidget::on_pushButton_clicked()
 void SettingWidget::on_colorSelect_clicked()
 {
     QColor color = QColorDialog::getColor(Qt::red,this,tr("颜色选择"),QColorDialog::ShowAlphaChannel);
-    QString rgb = QString("rgb(%1,%2,%3)")
-            .arg(color.red())
-            .arg(color.green())
-            .arg(color.blue());
+//    QString rgb = QString("rgb(%1,%2,%3)")
+//            .arg(color.red())
+//            .arg(color.green())
+//            .arg(color.blue());
+    QString rgb = QString("#%1%2%3")
+            .arg(color.red(),2,16,QChar('0'))
+            .arg(color.green(),2,16,QChar('0'))
+            .arg(color.blue(),2,16,QChar('0'));
     settingObj->fontColor = rgb;
     ui->fontColor->setText(rgb);
     emit signalToChangeSettings();
@@ -94,14 +108,48 @@ void SettingWidget::on_heigth_valueChanged(int heightVal)
 void SettingWidget::on_wallpaperBtn_clicked()
 {
     QString wallpaperFilePath = QFileDialog::getOpenFileName(this,"选择一个图片",
-                                                         QApplication::applicationDirPath(),
-                                                         "IMAGE(*.jpg *.png);;GIF(*.gif)");
-    qDebug() << "选择图片完毕, 进行加载";
+                                ui->wallpaperText->text().isEmpty()?QApplication::applicationDirPath():ui->wallpaperText->text(),
+                                "IMAGE(*.jpg *.png);;GIF(*.gif)");
     if(!wallpaperFilePath.isEmpty()){
         settingObj->wallpaperPath = wallpaperFilePath;
+        ui->wallpaperText->setText(wallpaperFilePath);
         emit signalToChangeSettings();
     }
 }
 void SettingWidget::closeEvent(QCloseEvent * event){
     emit exitSettingWidget();
+}
+
+void SettingWidget::on_shadowHorizontal_valueChanged(int shadowHorizontalVal)
+{
+    settingObj->shadowHorizontal = shadowHorizontalVal;
+    emit signalToChangeSettings();
+}
+
+
+void SettingWidget::on_shadowVertical_valueChanged(int shadowVerticalVal)
+{
+    settingObj->shadowVertical = shadowVerticalVal;
+    emit signalToChangeSettings();
+}
+
+
+void SettingWidget::on_shadowBlur_valueChanged(int shadowBlurVal)
+{
+    settingObj->shadowBlur = shadowBlurVal;
+    emit signalToChangeSettings();
+}
+
+
+void SettingWidget::on_shadowColorBtn_clicked()
+{
+    QColor color = QColorDialog::getColor(Qt::white,this,tr("颜色选择"),QColorDialog::ShowAlphaChannel);
+    QString rgb = QString("#%1%2%3")
+            .arg(color.red(),2,16,QChar('0'))
+            .arg(color.green(),2,16,QChar('0'))
+            .arg(color.blue(),2,16,QChar('0'));
+    qDebug() << "shadow color selected: " << rgb;
+    settingObj->shadowColor = rgb;
+    ui->shadowColorText->setText(rgb);
+    emit signalToChangeSettings();
 }

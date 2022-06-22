@@ -38,6 +38,14 @@ private slots:
 
     void on_wallpaperBtn_clicked();
 
+    void on_shadowHorizontal_valueChanged(int arg1);
+
+    void on_shadowVertical_valueChanged(int arg1);
+
+    void on_shadowBlur_valueChanged(int arg1);
+
+    void on_shadowColorBtn_clicked();
+
 private:
     Ui::SettingWidget *ui;
 signals:

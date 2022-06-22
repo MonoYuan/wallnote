@@ -10,6 +10,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QApplication>
+#include <QSize>
 
 /**
  * 1. 应用启动时从文件系统拿到当前配置,并通过这个配置展示文本
@@ -83,6 +84,11 @@ void Wallnote::readSettingFromDisk(){
         this->settingObj.height = out.readLine().toInt();
         this->settingObj.wallpaperPath = out.readLine();
 
+        this->settingObj.shadowHorizontal = out.readLine().toInt();
+        this->settingObj.shadowVertical = out.readLine().toInt();
+        this->settingObj.shadowBlur = out.readLine().toInt();
+        this->settingObj.shadowColor = out.readLine();
+
         this->settingObj.textContext = QString("").append(out.readLine());
         while(!out.atEnd()){
             settingObj.textContext.append("\n").append(out.readLine());
@@ -92,11 +98,13 @@ void Wallnote::readSettingFromDisk(){
 void Wallnote::initTextWindow(){
     this->textBrowser = new QTextBrowser(this);
     this->effect = new QGraphicsDropShadowEffect(this->textBrowser);
+    //this->effect->setColor();
     this->setTextWindow();
     this->textBrowser->show();
 }
 void Wallnote::setQLabel(){
     this->bkLabel->setPixmap(QPixmap(settingObj.wallpaperPath));
+    this->bkLabel->setScaledContents(true);
 }
 void Wallnote::setTextWindow(){
     //设置透明背景
@@ -112,9 +120,9 @@ void Wallnote::setTextWindow(){
     styleStr.append(QString("font-size:%1px;").arg(settingObj.fontSize));
     textBrowser->setStyleSheet(styleStr);
     //设置文字阴影
-    effect->setOffset(0,0);
-    effect->setColor(Qt::black);
-    effect->setBlurRadius(1);
+    effect->setOffset(settingObj.shadowHorizontal,settingObj.shadowVertical);
+    effect->setColor(QColor(settingObj.shadowColor));
+    effect->setBlurRadius(settingObj.shadowBlur);
     textBrowser->setGraphicsEffect(effect);
 }
 void Wallnote::initSystemIcon(){
@@ -144,6 +152,8 @@ void Wallnote::initSystemIcon(){
         connect(settingWidget,&SettingWidget::signalToChangeSettings,this,&Wallnote::changeSettingsAndSave);
     });
     connect(close,&QAction::triggered,this,[=](){
+        delete this;
+        qApp->closeAllWindows();
         qApp->quit();
     });
 
@@ -155,10 +165,6 @@ void Wallnote::changeSettingsAndSave(){
 }
 /**
  * 按行存储配置数据
- * 第一行: fontSize
- * 第二行: fontColor
- * 第三行: fontFamily
- * 第四行: 文本内容
  */
 void Wallnote::saveSettingToDisk(){
     QFile file(filePath);
@@ -172,6 +178,16 @@ void Wallnote::saveSettingToDisk(){
         out << this->settingObj.width << "\n";
         out << this->settingObj.height << "\n";
         out << this->settingObj.wallpaperPath << "\n";
+
+        out << this->settingObj.shadowHorizontal << "\n";
+        out << this->settingObj.shadowVertical << "\n";
+        out << this->settingObj.shadowBlur << "\n";
+        out << this->settingObj.shadowColor << "\n";
+
         out << this->settingObj.textContext;
     }
+}
+
+void Wallnote::paintEvent(QPaintEvent* event){
+    this->bkLabel->resize(this->size());
 }
