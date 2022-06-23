@@ -93,6 +93,7 @@ void Wallnote::readSettingFromDisk(){
         while(!out.atEnd()){
             settingObj.textContext.append("\n").append(out.readLine());
         }
+        file.close();
     }
 }
 void Wallnote::initTextWindow(){
@@ -185,6 +186,7 @@ void Wallnote::saveSettingToDisk(){
         out << this->settingObj.shadowColor << "\n";
 
         out << this->settingObj.textContext;
+        file.close();
     }
 }
 
