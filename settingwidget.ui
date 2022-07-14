@@ -177,7 +177,11 @@
     <widget class="QLineEdit" name="shadowColorText"/>
    </item>
    <item row="12" column="1">
-    <widget class="QLineEdit" name="wallpaperText"/>
+    <widget class="QLineEdit" name="wallpaperText">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+    </widget>
    </item>
    <item row="11" column="2">
     <widget class="QPushButton" name="shadowColorBtn">

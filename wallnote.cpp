@@ -153,9 +153,7 @@ void Wallnote::initSystemIcon(){
         connect(settingWidget,&SettingWidget::signalToChangeSettings,this,&Wallnote::changeSettingsAndSave);
     });
     connect(close,&QAction::triggered,this,[=](){
-        delete this;
-        qApp->closeAllWindows();
-        qApp->quit();
+        QApplication::quit();
     });
 
 }
