@@ -4,4 +4,7 @@
         <file>images/icon.png</file>
         <file>cat.ico</file>
     </qresource>
+    <qresource prefix="/">
+        <file>icon.ico</file>
+    </qresource>
 </RCC>
