@@ -3,6 +3,7 @@
 #include <QColorDialog>
 #include <QFileDialog>
 #include <QApplication>
+#include <QDebug>
 
 SettingWidget::SettingWidget(QWidget *parent) :
     QWidget(parent),
@@ -153,3 +154,12 @@ void SettingWidget::on_shadowColorBtn_clicked()
     ui->shadowColorText->setText(rgb);
     emit signalToChangeSettings();
 }
+
+void SettingWidget::on_resetWallnotePath_clicked()
+{
+    SettingObject so;
+    settingObj->wallpaperPath = so.wallpaperPath;
+    ui->wallpaperText->setText(so.wallpaperPath);
+    emit signalToChangeSettings();
+}
+

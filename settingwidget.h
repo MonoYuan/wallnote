@@ -46,6 +46,8 @@ private slots:
 
     void on_shadowColorBtn_clicked();
 
+    void on_resetWallnotePath_clicked();
+
 private:
     Ui::SettingWidget *ui;
 signals:
