@@ -16,9 +16,10 @@ public:
     explicit SettingWidget(QWidget *parent = nullptr);
     ~SettingWidget();
     SettingObject* settingObj;
-    void loadCurValue();
+    void loadCurValue(int currentNum);
     void settingApply();
     void closeEvent(QCloseEvent * event) override;
+
 
 
 private slots:
@@ -48,11 +49,14 @@ private slots:
 
     void on_resetWallnotePath_clicked();
 
+    void on_screenSelect_currentIndexChanged(int index);
+
 private:
     Ui::SettingWidget *ui;
 signals:
-    void signalToChangeSettings();
+    void signalToChangeSettings(int screenNumber);
     void exitSettingWidget();
+    void signalToChangeSettingObj(int screenNumber);
 };
 
 #endif // SETTINGWIDGET_H

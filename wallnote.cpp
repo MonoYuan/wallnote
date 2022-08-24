@@ -11,6 +11,10 @@
 #include <QTextStream>
 #include <QApplication>
 #include <QSize>
+#include <QTimer>
+#include <QGuiApplication>
+#include <QScreen>
+#include <QMessageBox>
 
 /**
  * 1. 应用启动时从文件系统拿到当前配置,并通过这个配置展示文本
@@ -25,31 +29,56 @@
  *      6. 将配置设置给 设置Widget 并反显
  */
 
-Wallnote::Wallnote(QWidget *parent)
-    : QWidget(parent)
-    ,bkLabel(new QLabel(this))
+Wallnote::Wallnote(bool isMain,int screenNumber,Wallnote* parentWallnote,QWidget *parent) : QWidget(parent) ,bkLabel(new QLabel(this))
 {
     //初始配置存储统路径
+    this->screenNumber = screenNumber;
     QString appPath = QApplication::applicationDirPath();
-    filePath = appPath + "/data.dat";
+    filePath = appPath + "/data"+QString::number(screenNumber)+".dat";
     //从磁盘读取配置,并将其指针设置给SettingObj属性
     readSettingFromDisk();
     //展示壁纸
     showWallpaper();
     //初始化文本背景并展示
     initTextWindow();
-    //展示系统托盘图标
-    initSystemIcon();
+    QList<QScreen *> listScreen = QGuiApplication::screens();
+    /*
+    两种情况:
+        1: 软件运行状态下, 接入外接显示器并设置为扩展   读取是否有第二配置, 有的话加载
+        2: 软件运行状态下, 点击设置, 在设置中显示多显示器配置 ---已完成
+        3: 软件启动时, 如果有外接显示器, 则检测副屏配置并显示
+    */
+    if(isMain){
+        for(int i=0;i<MAX_SCREEN_NUM;i++){
+            wallnoteStateArr[i] = 0;
+        }
+        this->screenNumber = 0;
+        //展示系统托盘图标
+        initSystemIcon();
+        this->setGeometry(listScreen.at(0)->geometry());
+        this->wallnoteArr[0] = this;
+        wallnoteStateArr[0] = 1;
+        QTimer* timer = new QTimer(this);
+        timer->callOnTimeout(this,&Wallnote::screenChangeListening);
+        timer->start(10000);
+    }else{
+        qDebug("new Wallnote for the other screen is initialized!!!");
+        this->setGeometry(listScreen.at(screenNumber)->geometry());
+    }
+
 }
 
 Wallnote::~Wallnote()
 {
     delete this->textBrowser;
-    delete this->effect;
 }
 
 void Wallnote::showWallpaper(){
     //展示桌面壁纸
+    //壁纸需要嵌入SHELLDLL_Defview窗口上
+    //windows默认桌面主窗口是Progman窗口
+    //win10包含两个WorkerW窗口,是桌面过渡动画窗口
+    //原没有WorkerW窗口时,SHELLDLL_DefView是嵌在Progman窗口上的,现在是嵌入其中一个WorkerW上
     HWND desktop = FindWindowEx(NULL,NULL,L"Progman",NULL);
     setQLabel();
     setWindowFlag(Qt::WindowType::FramelessWindowHint);
@@ -72,6 +101,7 @@ void Wallnote::showWallpaper(){
     }
 }
 void Wallnote::readSettingFromDisk(){
+    qDebug() << "preparing read file, filePath: " << filePath;
     QFile file(filePath);
     if(file.open(QFile::ReadOnly | QFile::Truncate)){
         QTextStream out(&file);
@@ -94,6 +124,14 @@ void Wallnote::readSettingFromDisk(){
             settingObj.textContext.append("\n").append(out.readLine());
         }
         file.close();
+    }
+}
+void Wallnote::loadDataForWallnote(int screenNumber){
+    if(wallnoteStateArr[screenNumber]==1){
+        wallnoteArr[screenNumber]->readSettingFromDisk();
+        this->settingWidget->settingObj = &wallnoteArr[screenNumber]->settingObj;
+    }else{
+        this->settingWidget->settingObj = nullptr;
     }
 }
 void Wallnote::initTextWindow(){
@@ -143,24 +181,37 @@ void Wallnote::initSystemIcon(){
         qDebug() << "in setting page";
         settingWidget = new SettingWidget();
         //关闭设置窗口后回收其内存, 因为其没有挂载到主Widget上
-        connect(this->settingWidget,&SettingWidget::exitSettingWidget,this,[=](){
+        connect(settingWidget,&SettingWidget::exitSettingWidget,this,[=](){
             delete this->settingWidget;
         });
         settingWidget->settingObj = &settingObj;
-        settingWidget->loadCurValue();
+        settingWidget->loadCurValue(screenNumber);
         settingWidget->show();
         //这里需要SettingWidget中传入SettingObject的指针, 让changeText接收到并获取到对应的值,并改变主窗口的文件显示
         connect(settingWidget,&SettingWidget::signalToChangeSettings,this,&Wallnote::changeSettingsAndSave);
+        connect(settingWidget,&SettingWidget::signalToChangeSettingObj,this,&Wallnote::loadDataForWallnote);
     });
     connect(close,&QAction::triggered,this,[=](){
         QApplication::quit();
     });
-
 }
-void Wallnote::changeSettingsAndSave(){
-    setTextWindow();
-    setQLabel();
-    saveSettingToDisk();
+void Wallnote::changeSettingsAndSave(int screenNumber){
+    //展示指定的窗口,保存指定的配置
+    //如果是接入副屏后第一次设置,则需要新建一个Wallnote对象
+    //对于多的副屏对象(之前建立后由于外接显示器断开导致)则在定时任务中清除多余的对象
+    if(screenNumber>9){
+        QMessageBox::warning(this,"最大支持"+QString::number(MAX_SCREEN_NUM)+"个屏幕显示","warning");
+        return;
+    }
+    Wallnote* currentNote = this->wallnoteArr[screenNumber];
+    if(currentNote==nullptr){
+        currentNote = new Wallnote(false,screenNumber,this);
+        this->wallnoteStateArr[screenNumber] = 1;
+        this->wallnoteArr[screenNumber] = currentNote;
+    }
+    currentNote->setTextWindow();
+    currentNote->setQLabel();
+    currentNote->saveSettingToDisk();
 }
 /**
  * 按行存储配置数据
@@ -191,3 +242,20 @@ void Wallnote::saveSettingToDisk(){
 void Wallnote::paintEvent(QPaintEvent* event){
     this->bkLabel->resize(this->size());
 }
+void Wallnote::screenChangeListening(){
+    QList<QScreen *> list = QGuiApplication::screens();
+    int maxNum = list.size()>this->MAX_SCREEN_NUM?MAX_SCREEN_NUM:list.size();
+    for(int i=0;i<maxNum;i++){
+        if(wallnoteStateArr[i]==0){
+            QString configFilePath = QApplication::applicationDirPath()+"/data"+QString::number(screenNumber)+".dat";
+            QFile f(configFilePath);
+            if(f.exists()){
+                wallnoteArr[i] = new Wallnote(false,i,this);
+                wallnoteStateArr[i] = 1;
+                wallnoteArr[i]->show();
+            }
+        }
+    }
+
+}
+
